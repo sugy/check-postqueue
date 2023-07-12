@@ -1,7 +1,7 @@
 package main
 
-import "github.com/mackerelio/go-check-plugins/check-mailq/lib"
+import "github.com/sugy/check-postqueue/lib"
 
 func main() {
-	checkmailq.Do()
+	checkpostqueue.Do()
 }
