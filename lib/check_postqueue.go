@@ -50,12 +50,18 @@ func newMonitor(warning, critical int64) *monitor {
 var opts struct {
 	Warning  int64 `short:"w" long:"warning" default:"100" description:"number of messages in queue to generate warning"`
 	Critical int64 `short:"c" long:"critical" default:"200" description:"number of messages in queue to generate critical alert ( w < c )"`
+	Version  bool  `long:"version" description:"Show version"`
 }
 
 func run(args []string) *checkers.Checker {
 	_, err := flags.ParseArgs(&opts, args)
 	if err != nil {
 		os.Exit(1)
+	}
+
+	if opts.Version {
+		showVersion()
+		os.Exit(0)
 	}
 
 	var queue int64
