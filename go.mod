@@ -3,6 +3,7 @@ module github.com/sugy/check-postqueue
 go 1.20
 
 require (
+	github.com/BurntSushi/toml v1.3.2
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/mackerelio/checkers v0.0.4
 	github.com/sirupsen/logrus v1.9.3

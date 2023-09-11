@@ -1,0 +1,49 @@
+-Queue ID- --Size-- ----Arrival Time---- -Sender/Recipient-------
+E40C184C509*    7718 Mon Jun 26 07:28:03  xxxxxxxx@xxxxxxx.jp
+                                         xxxxxxxx@xxxxxxx.com
+
+1457084D84C     3414 Fri Jun 23 13:39:42  xxxxxxxx@xxxxxxx.ne.jp
+(delivery temporarily suspended: connect to xxxxxxx.com[203.0.113.0]:25: Connection timed out)
+                                         xxxxxxxx@xxxxxxx.com
+
+562B1846706     6100 Mon Jun 26 14:59:41  xxxxxxxx@xxxxxxx.com
+(host xxxxxxx.com[203.0.113.0] said: 454 4.7.1 <xxxxxxxx@xxxxxxx.com>: Relay access denied (in reply to RCPT TO command))
+                                         xxxxxxxx@xxxxxxx.com
+
+569E084D845     3404 Sun Jun 25 13:30:35  xxxxxxxx@xxxxxxx.jp
+(delivery temporarily suspended: connect to xxxxxxx.com[203.0.113.0]:25: Connection timed out)
+                                         xxxxxxxx@xxxxxxx.com
+
+5FE1480BB7A     9048 Thu Jun 22 14:21:12  xxxxxxxx@xxxxxxx.com
+(host mx01.xxxxxxx.com[203.0.113.0] said: 454 4.7.1 <xxxxxxxx@xxxxxxx.com>: Relay access denied (in reply to RCPT TO command))
+                                         xxxxxxxx@xxxxxxx.com
+
+506B684D857     4236 Mon Jun 26 10:29:39  xxxxxxxx@xxxxxxx.jp
+(host smtp.xxxxxxx.or.jp[203.0.113.0] said: 450 4.7.1 <xxxxxxx.xxxxxxx.jp>: Helo command rejected: Host not found (in reply to RCPT TO command))
+                                         xxxxxxxx@xxxxxxx.jp
+
+55FED84670C     3806 Thu Jun 22 09:40:35  xxxxxxxx@xxxxxxx.jp
+(host xxxxxxx.com[203.0.113.0] said: 452-4.2.2 The email account that you tried to reach is over quota. Please direct 452-4.2.2 the recipient to 452 4.2.2  https://support.example.com/mail/?p=OverQuotaTemp xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.583 - smtp (in reply to RCPT TO command))
+                                         xxxxxxxx@xxxxxxx.com
+
+5868984DD1B    10413 Tue Jun 20 22:47:52  xxxxxxxx@xxxxxxx.jp
+(Host or domain name not found. Name service error for name=xxxxxxx.co type=MX: Host not found, try again)
+                                         xxxxxxxx@xxxxxxx.co
+
+5E9E784DD01     5656 Sun Jun 25 14:44:54  xxxxxxxx@xxxxxxx.jp
+           (connect to xxxxxxx.com[203.0.113.0]:25: Connection timed out)
+                                         xxxxxxxx@xxxxxxx.com
+
+55DC084D55B     2806 Sat Jun 24 02:47:21  xxxxxxxx@xxxxxxx.jp
+           (connect to xxxxxxx.com[203.0.113.0]:25: Connection refused)
+                                         xxxxxxxx@xxxxxxx.com
+
+5615684D55A     1655 Sun Jun 18 16:12:35  xxxxxxxx@xxxxxxx.jp
+(host mail.xxxxxxx.jp[203.0.113.0] said: 454 4.7.1 <xxxxxxxx@xxxxxxx.jp>: Relay access denied (in reply to RCPT TO command))
+                                         xxxxxxxx@xxxxxxx.xxxxxxx.jp
+
+5C99D84D85A     4089 Mon Jun 19 10:12:36  xxxxxxxx@xxxxxxx.com
+                 (connect to xxxxxxx.com[203.0.113.0]:25: Connection timed out)
+                                         xxxxxxxx@xxxxxxx.com
+
+-- 1248 Kbytes in 12 Requests.
