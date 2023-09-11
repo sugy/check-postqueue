@@ -44,7 +44,7 @@ func (c *CheckPostqueueConfig) generateConfig() []string {
 
 	// Output config file template
 	result = append(result, `# Path to postqueue command`)
-	result = append(result, `PostQueuePath = "`+c.PostqueuePath+`"`)
+	result = append(result, `PostqueuePath = "`+c.PostqueuePath+`"`)
 	result = append(result, ``)
 
 	result = append(result, `# Exclude message categories`)

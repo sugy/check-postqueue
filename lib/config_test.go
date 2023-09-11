@@ -8,7 +8,7 @@ import (
 func TestCheckPostqueueConfig_loadConfig(t *testing.T) {
 	type fields struct {
 		Prefix        string
-		PostQueuePath string
+		PostqueuePath string
 		MsgCategories map[string]string
 	}
 	type args struct {
@@ -49,7 +49,7 @@ func TestCheckPostqueueConfig_loadConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &CheckPostqueueConfig{}
 			if err := c.loadConfig(tt.args.configFile); (err != nil) != tt.wantErr {
-				t.Errorf("PostqueuePluginConfig.loadConfig() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CheckPostqueueConfig.loadConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -65,7 +65,7 @@ func TestCheckPostqueueConfig_generateConfig(t *testing.T) {
 			wantOutput: []string{
 				`# CheckPostqueue config file`,
 				`# Path to postqueue command`,
-				`PostQueuePath = "/usr/sbin/postqueue"`,
+				`PostqueuePath = "/usr/sbin/postqueue"`,
 				``,
 				`# Exclude message categories`,
 				`# Format: <category> = "<regex>"`,
@@ -86,7 +86,7 @@ func TestCheckPostqueueConfig_generateConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &CheckPostqueueConfig{}
 			if output := c.generateConfig(); !reflect.DeepEqual(output, tt.wantOutput) {
-				t.Errorf("PostqueuePluginConfig.generateConfig() output = %v, wantoutput = %v, DeepEqual = %v", output, tt.wantOutput, reflect.DeepEqual(output, tt.wantOutput))
+				t.Errorf("CheckPostqueueConfig.generateConfig() output = %v, wantoutput = %v, DeepEqual = %v", output, tt.wantOutput, reflect.DeepEqual(output, tt.wantOutput))
 			}
 		})
 	}

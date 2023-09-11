@@ -1,4 +1,4 @@
-PostQueuePath = "/usr/bin/postqueue"
+PostqueuePath = "/usr/bin/postqueue"
 
 [ExcludeMsgCategories]
   ##"Connection refused"     = "Connection refused"
