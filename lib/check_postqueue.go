@@ -49,7 +49,7 @@ func (p *CheckPostqueue) AnalyzePostqueue() (map[string]float64, error) {
 				// log.Debug("AnalyzePostqueue (line): ", fmt.Sprintf("'%v'", line))
 				name := strings.Replace(category, " ", "_", -1)
 				metrics[name] = metrics[name] + 1
-				// not break here, because one line may match multiple categories
+				break
 			}
 		}
 		// line の先頭が 10桁以上の16進数であれば、それはキューIDとみなす
