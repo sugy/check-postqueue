@@ -8,12 +8,19 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jessevdk/go-flags"
+	flags "github.com/jessevdk/go-flags"
 	"github.com/mackerelio/checkers"
+	log "github.com/sirupsen/logrus"
 )
 
 // Do the plugin
 func Do() {
+	customFmt := new(log.TextFormatter)
+	customFmt.TimestampFormat = "2006-01-02 15:04:05"
+	customFmt.FullTimestamp = true
+	log.SetFormatter(customFmt)
+	log.SetOutput(os.Stdout)
+
 	ckr := run(os.Args[1:])
 	ckr.Name = "Postqueue"
 	ckr.Exit()
@@ -51,12 +58,17 @@ var opts struct {
 	Warning  int64 `short:"w" long:"warning" default:"100" description:"number of messages in queue to generate warning"`
 	Critical int64 `short:"c" long:"critical" default:"200" description:"number of messages in queue to generate critical alert ( w < c )"`
 	Version  bool  `long:"version" description:"Show version"`
+	Debug    bool  `long:"debug" description:"Debug mode"`
 }
 
 func run(args []string) *checkers.Checker {
 	_, err := flags.ParseArgs(&opts, args)
 	if err != nil {
 		os.Exit(1)
+	}
+
+	if opts.Debug {
+		log.SetLevel(log.DebugLevel)
 	}
 
 	if opts.Version {
