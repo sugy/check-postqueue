@@ -1,2 +1,1 @@
-[ExcludeMsgCategories]
-dummy
+ExcludeMessages = "dummy"

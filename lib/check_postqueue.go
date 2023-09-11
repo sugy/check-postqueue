@@ -15,14 +15,14 @@ import (
 )
 
 type CheckPostqueue struct {
-	PostqueuePath        string
-	PostqueueArgs        []string
-	PostqueueOutput      string
-	ExcludeMsgCategories map[string]*regexp.Regexp
+	PostqueuePath   string
+	PostqueueArgs   []string
+	PostqueueOutput string
+	ExcludeMessages []*regexp.Regexp
 }
 
 // Analyze Postfix postqueue
-func (p *CheckPostqueue) AnalyzePostqueue() (map[string]float64, error) {
+func (p *CheckPostqueue) AnalyzePostqueue() ([]int64, error) {
 	if p.PostqueueOutput == "" {
 		output, err := p.runPostQueueCommand()
 		if err != nil {
@@ -32,33 +32,27 @@ func (p *CheckPostqueue) AnalyzePostqueue() (map[string]float64, error) {
 		p.PostqueueOutput = output
 	}
 
-	// Initialize metric map
-	metrics := make(map[string]float64)
-	// Initialize metric map for Message categories
-	for category := range p.ExcludeMsgCategories {
-		name := strings.Replace(category, " ", "_", -1)
-		metrics[name] = 0
-	}
+	// Initialize counts
+	counts := make([]int64, len(p.ExcludeMessages)+1)
 
-	// Read and classify output entries
+	// Read and count output entries
 	scanner := bufio.NewScanner(strings.NewReader(p.PostqueueOutput))
 	for scanner.Scan() {
 		line := scanner.Text()
-		for category, regex := range p.ExcludeMsgCategories {
-			if regex.MatchString(line) {
+		for i := range p.ExcludeMessages {
+			if p.ExcludeMessages[i].MatchString(line) {
 				// log.Debug("AnalyzePostqueue (line): ", fmt.Sprintf("'%v'", line))
-				name := strings.Replace(category, " ", "_", -1)
-				metrics[name] = metrics[name] + 1
+				counts[i] = counts[i] + 1
 				break
 			}
 		}
 		// line の先頭が 10桁以上の16進数であれば、それはキューIDとみなす
 		if len(line) >= 10 && regexp.MustCompile(`^[0-9A-F]{10,12}[*]{0,1}\s+`).MatchString(line) {
-			metrics["queue"] = metrics["queue"] + 1
+			counts[len(counts)-1] = counts[len(counts)-1] + 1
 		}
 	}
-	log.Debug("AnalyzePostqueue (metrics): ", fmt.Sprintf("'%v'", metrics))
-	return metrics, nil
+	log.Debug("AnalyzePostqueue (counts): ", fmt.Sprintf("'%v'", counts))
+	return counts, nil
 }
 
 // runPostQueueCommand executes the "postqueue -p" command and returns its output
@@ -94,29 +88,27 @@ func (p *CheckPostqueue) loadConfig(configFile string) error {
 	}
 
 	// Set config file values for Message categories
-	if c.ExcludeMsgCategories != nil {
-		p.ExcludeMsgCategories = getMsgCategories(c.ExcludeMsgCategories)
+	if c.ExcludeMessages != nil {
+		p.ExcludeMessages = getMessages(c.ExcludeMessages)
 	}
 
 	return nil
 }
 
 // getMsgCategories returns the map of message categories
-func getMsgCategories(m map[string]string) map[string]*regexp.Regexp {
-	msgCategories := make(map[string]*regexp.Regexp)
-	for category, regex := range m {
-		if category != "" && regex != "" {
-			msgCategories[category] = regexp.MustCompile(regex)
-		}
+func getMessages(m []string) []*regexp.Regexp {
+	messages := make([]*regexp.Regexp, len(m))
+	for i := range m {
+		messages[i] = regexp.MustCompile(m[i])
 	}
-	return msgCategories
+	return messages
 }
 
 func (p *CheckPostqueue) validate() error {
 	if p.PostqueuePath == "" {
 		return fmt.Errorf("postqueue path is required")
 	}
-	if len(p.ExcludeMsgCategories) == 0 {
+	if len(p.ExcludeMessages) == 0 {
 		return fmt.Errorf("message categories is required")
 	}
 	return nil
@@ -217,8 +209,8 @@ func run(args []string) *checkers.Checker {
 	}
 
 	// Set default values for Message categories
-	if p.ExcludeMsgCategories == nil {
-		p.ExcludeMsgCategories = getMsgCategories(getDefaultMsgCategories())
+	if p.ExcludeMessages == nil {
+		p.ExcludeMessages = getMessages(getDefaultMessages())
 	}
 
 	log.Debug("Do (p): ", fmt.Sprintf("'%v'", p))
@@ -229,22 +221,21 @@ func run(args []string) *checkers.Checker {
 		os.Exit(1)
 	}
 
-	var metrics map[string]float64
-	metrics, err = p.AnalyzePostqueue()
+	var counts []int64
+	counts, err = p.AnalyzePostqueue()
 	if err != nil {
 		log.Errorf("Failed to Analyze Postqueue: %s", err)
 		os.Exit(1)
 	}
-	log.Debug("metrics: ", fmt.Sprintf("'%v'", metrics))
+	log.Debug("counts: ", fmt.Sprintf("'%v'", counts))
 
-	queue := int64(metrics["queue"])
+	queue := int64(counts[len(counts)-1])
 	monitor := newMonitor(opts.Warning, opts.Critical)
 	result := checkers.OK
 
 	exclude := int64(0)
-	for category := range p.ExcludeMsgCategories {
-		name := strings.Replace(category, " ", "_", -1)
-		exclude = exclude + int64(metrics[name])
+	for i := range p.ExcludeMessages {
+		exclude = exclude + int64(counts[i])
 	}
 
 	count := int64(0)

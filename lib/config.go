@@ -3,16 +3,14 @@ package checkpostqueue
 import (
 	"fmt"
 	"io/ioutil"
-	"sort"
 
 	"github.com/BurntSushi/toml"
-	log "github.com/sirupsen/logrus"
 )
 
 // CheckPostqueueConfig is the configuration file format
 type CheckPostqueueConfig struct {
-	PostqueuePath        string
-	ExcludeMsgCategories map[string]string
+	PostqueuePath   string
+	ExcludeMessages []string
 }
 
 // loadConfig loads the plugin configuration file
@@ -34,10 +32,7 @@ func (c *CheckPostqueueConfig) loadConfig(configFile string) error {
 func (c *CheckPostqueueConfig) generateConfig() []string {
 	c.PostqueuePath = "/usr/sbin/postqueue"
 
-	c.ExcludeMsgCategories = getDefaultMsgCategories()
-	keys := c.getMsgCategoriesKeys()
-	sort.Strings(keys)
-	log.Debug("generateConfig: MsgCategories keys: ", keys)
+	c.ExcludeMessages = getDefaultMessages()
 
 	var result []string
 	result = append(result, `# CheckPostqueue config file`)
@@ -47,37 +42,29 @@ func (c *CheckPostqueueConfig) generateConfig() []string {
 	result = append(result, `PostqueuePath = "`+c.PostqueuePath+`"`)
 	result = append(result, ``)
 
-	result = append(result, `# Exclude message categories`)
-	result = append(result, `# Format: <category> = "<regex>"`)
-	result = append(result, `[ExcludeMsgCategories]`)
-	for k := range keys {
-		result = append(result, `  "`+keys[k]+`" = "`+c.ExcludeMsgCategories[keys[k]]+`"`)
+	result = append(result, `# Exclude messages`)
+	result = append(result, `# Format: [ "<regex>", ... ]`)
+	result = append(result, `ExcludeMessages = [`)
+	for i := range c.ExcludeMessages {
+		result = append(result, `  "`+c.ExcludeMessages[i]+`",`)
 	}
+	result = append(result, `]`)
 
 	return result
 }
 
-// Get MsgCategories keys
-func (c *CheckPostqueueConfig) getMsgCategoriesKeys() []string {
-	keys := make([]string, 0, len(c.ExcludeMsgCategories))
-	for k := range c.ExcludeMsgCategories {
-		keys = append(keys, k)
-	}
-	return keys
-}
-
-// Set default MsgCategories
-func getDefaultMsgCategories() map[string]string {
-	return map[string]string{
-		//"Connection refused":     "Connection refused",
-		//"Connection timeout":     "Connection timed out",
-		"Helo command rejected": "Helo command rejected: Host not found",
-		"Host not found":        "type=MX: Host not found, try again",
-		"Mailbox full":          "Mailbox full",
-		//"Network is unreachable": "Network is unreachable",
-		"No route to host": "No route to host",
-		"Over quota":       "The email account that you tried to reach is over quota",
-		//"Relay access denied":    "Relay access denied",
+// Set default Messages
+func getDefaultMessages() []string {
+	return []string{
+		//"Connection refused",
+		//"Connection timed out",
+		"Helo command rejected: Host not found",
+		"type=MX: Host not found, try again",
+		"Mailbox full",
+		//"Network is unreachable",
+		"No route to host",
+		"The email account that you tried to reach is over quota",
+		//"Relay access denied",
 		// Add more log categories with corresponding regular expressions
 	}
 }

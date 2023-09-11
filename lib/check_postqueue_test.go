@@ -29,58 +29,58 @@ func readFile(filePath string) (string, error) {
 
 func TestCheckPostqueue_AnalyzePostqueue(t *testing.T) {
 	type fields struct {
-		TestdataPath  string
-		MsgCategories map[string]*regexp.Regexp
+		TestdataPath string
+		Messages     []*regexp.Regexp
 	}
 	tests := []struct {
 		name    string
 		fields  fields
-		want    map[string]float64
+		want    []int64
 		wantErr bool
 	}{
 		{
-			name: "check metrics",
+			name: "check counts",
 			fields: fields{
 				TestdataPath: "../testdata/postqueue_output.txt",
-				MsgCategories: map[string]*regexp.Regexp{
-					"Connection refused":    regexp.MustCompile(`Connection refused`),
-					"Connection timeout":    regexp.MustCompile(`Connection timed out`),
-					"Helo command rejected": regexp.MustCompile(`Helo command rejected: Host not found`),
-					"Over quota":            regexp.MustCompile(`The email account that you tried to reach is over quota`),
+				Messages: []*regexp.Regexp{
+					regexp.MustCompile(`Connection refused`),
+					regexp.MustCompile(`Connection timed out`),
+					regexp.MustCompile(`Helo command rejected: Host not found`),
+					regexp.MustCompile(`The email account that you tried to reach is over quota`),
 				},
 			},
-			want: map[string]float64{
-				"Connection_timeout":    4,
-				"Connection_refused":    1,
-				"Helo_command_rejected": 1,
-				"Over_quota":            1,
-				"queue":                 12,
+			want: []int64{
+				1,
+				4,
+				1,
+				1,
+				12,
 			},
 		},
 		{
-			name: "check metrics with empty msgCategories",
+			name: "check counts with empty exclude messages",
 			fields: fields{
-				TestdataPath:  "../testdata/postqueue_output.txt",
-				MsgCategories: map[string]*regexp.Regexp{},
+				TestdataPath: "../testdata/postqueue_output.txt",
+				Messages:     []*regexp.Regexp{},
 			},
-			want: map[string]float64{
-				"queue": 12,
+			want: []int64{
+				12,
 			},
 		},
 		{
-			// If there are no matching rows in msgCategories, the metric will be 0.
-			name: "check metrics with no match msgCategories",
+			// If there are no matching rows in messages, the count will be 0.
+			name: "check counts with no match exclude messages",
 			fields: fields{
 				TestdataPath: "../testdata/postqueue_output.txt",
-				MsgCategories: map[string]*regexp.Regexp{
-					"Connection timeout": regexp.MustCompile(`Connection timed out`),
-					"Dummy":              regexp.MustCompile(`Dummy`),
+				Messages: []*regexp.Regexp{
+					regexp.MustCompile(`Connection timed out`),
+					regexp.MustCompile(`Dummy`),
 				},
 			},
-			want: map[string]float64{
-				"Connection_timeout": 4,
-				"Dummy":              0,
-				"queue":              12,
+			want: []int64{
+				4,
+				0,
+				12,
 			},
 		},
 	}
@@ -95,8 +95,8 @@ func TestCheckPostqueue_AnalyzePostqueue(t *testing.T) {
 			}
 
 			p := &CheckPostqueue{
-				PostqueueOutput:      output,
-				ExcludeMsgCategories: tt.fields.MsgCategories,
+				PostqueueOutput: output,
+				ExcludeMessages: tt.fields.Messages,
 			}
 			got, err := p.AnalyzePostqueue()
 			if (err != nil) != tt.wantErr {
@@ -113,10 +113,10 @@ func TestCheckPostqueue_AnalyzePostqueue(t *testing.T) {
 
 func TestCheckPostqueue_loadConfig(t *testing.T) {
 	type fields struct {
-		PostqueuePath        string
-		PostqueueArgs        []string
-		PostqueueOutput      string
-		ExcludeMsgCategories map[string]*regexp.Regexp
+		PostqueuePath   string
+		PostqueueArgs   []string
+		PostqueueOutput string
+		ExcludeMessages []*regexp.Regexp
 	}
 	type args struct {
 		configFile string
@@ -137,16 +137,16 @@ func TestCheckPostqueue_loadConfig(t *testing.T) {
 			wantErr: false,
 			want: &CheckPostqueue{
 				PostqueuePath: "/usr/bin/postqueue",
-				ExcludeMsgCategories: map[string]*regexp.Regexp{
-					//"Connection refused":     regexp.MustCompile(`Connection refused`),
-					//"Connection timeout":     regexp.MustCompile(`Connection timed out`),
-					"Helo command rejected": regexp.MustCompile(`Helo command rejected: Host not found`),
-					"Host not found":        regexp.MustCompile(`type=MX: Host not found, try again`),
-					"Mailbox full":          regexp.MustCompile(`Mailbox full`),
-					//"Network is unreachable": regexp.MustCompile(`Network is unreachable`),
-					"No route to host": regexp.MustCompile(`No route to host`),
-					"Over quota":       regexp.MustCompile(`The email account that you tried to reach is over quota`),
-					//"Relay access denied":    regexp.MustCompile(`Relay access denied`),
+				ExcludeMessages: []*regexp.Regexp{
+					//regexp.MustCompile(`Connection refused`),
+					//regexp.MustCompile(`Connection timed out`),
+					regexp.MustCompile(`Helo command rejected: Host not found`),
+					regexp.MustCompile(`type=MX: Host not found, try again`),
+					regexp.MustCompile(`Mailbox full`),
+					//regexp.MustCompile(`Network is unreachable`),
+					regexp.MustCompile(`No route to host`),
+					regexp.MustCompile(`The email account that you tried to reach is over quota`),
+					//regexp.MustCompile(`Relay access denied`),
 				},
 			},
 		},

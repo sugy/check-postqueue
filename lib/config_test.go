@@ -9,7 +9,7 @@ func TestCheckPostqueueConfig_loadConfig(t *testing.T) {
 	type fields struct {
 		Prefix        string
 		PostqueuePath string
-		MsgCategories map[string]string
+		Messages      []string
 	}
 	type args struct {
 		configFile string
@@ -67,18 +67,19 @@ func TestCheckPostqueueConfig_generateConfig(t *testing.T) {
 				`# Path to postqueue command`,
 				`PostqueuePath = "/usr/sbin/postqueue"`,
 				``,
-				`# Exclude message categories`,
-				`# Format: <category> = "<regex>"`,
-				`[ExcludeMsgCategories]`,
-				//`  "Connection refused" = "Connection refused"`,
-				//`  "Connection timeout" = "Connection timed out"`,
-				`  "Helo command rejected" = "Helo command rejected: Host not found"`,
-				`  "Host not found" = "type=MX: Host not found, try again"`,
-				`  "Mailbox full" = "Mailbox full"`,
-				//`  "Network is unreachable" = "Network is unreachable"`,
-				`  "No route to host" = "No route to host"`,
-				`  "Over quota" = "The email account that you tried to reach is over quota"`,
-				//`  "Relay access denied" = "Relay access denied"`,
+				`# Exclude messages`,
+				`# Format: [ "<regex>", ... ]`,
+				`ExcludeMessages = [`,
+				//`  "Connection refused",`,
+				//`  "Connection timed out",`,
+				`  "Helo command rejected: Host not found",`,
+				`  "type=MX: Host not found, try again",`,
+				`  "Mailbox full",`,
+				//`  "Network is unreachable",`,
+				`  "No route to host",`,
+				`  "The email account that you tried to reach is over quota",`,
+				//`  "Relay access denied",`,
+				`]`,
 			},
 		},
 	}
