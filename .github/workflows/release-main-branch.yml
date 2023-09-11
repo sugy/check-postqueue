@@ -1,0 +1,44 @@
+name: release-main-branch
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'testdata/**'
+      - '!*.go'
+      - '!*.mod'
+      - '!*.sum'
+      - 'README.md'
+
+permissions:
+  contents: write
+
+jobs:
+  release-main-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Create Tag
+        run: |
+          echo 'deb [trusted=yes] https://apt.fury.io/caarlos0/ /' | sudo tee /etc/apt/sources.list.d/caarlos0.list
+          sudo apt update
+          sudo apt install svu
+          git tag "$(svu p)"
+          git push --tags
+      - name: Setup Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: stable
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
