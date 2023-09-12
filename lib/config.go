@@ -2,7 +2,7 @@ package checkpostqueue
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/BurntSushi/toml"
 )
@@ -15,7 +15,7 @@ type CheckPostqueueConfig struct {
 
 // loadConfig loads the plugin configuration file
 func (c *CheckPostqueueConfig) loadConfig(configFile string) error {
-	contents, err := ioutil.ReadFile(configFile)
+	contents, err := os.ReadFile(configFile)
 	if err != nil {
 		return fmt.Errorf("an error occurred while loading the file: %w", err)
 	}
