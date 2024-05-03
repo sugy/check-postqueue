@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// CheckPostqueue struct stores the information needed for this command.
 type CheckPostqueue struct {
 	PostqueuePath   string
 	PostqueueArgs   []string
@@ -21,7 +22,7 @@ type CheckPostqueue struct {
 	ExcludeMessages []*regexp.Regexp
 }
 
-// Analyze Postfix postqueue
+// AnalyzePostqueue is analyze postqueue output texts.
 func (p *CheckPostqueue) AnalyzePostqueue() ([]int64, error) {
 	if p.PostqueueOutput == "" {
 		output, err := p.runPostQueueCommand()
@@ -75,7 +76,7 @@ func (p *CheckPostqueue) runPostQueueCommand() (string, error) {
 
 // loadConfig loads config file
 func (p *CheckPostqueue) loadConfig(configFile string) error {
-	c := &CheckPostqueueConfig{}
+	c := &Config{}
 	// Load config file
 	err := c.loadConfig(configFile)
 	if err != nil {
@@ -116,7 +117,7 @@ func (p *CheckPostqueue) validate() error {
 
 // Generate config file template
 func generateConfig() {
-	c := &CheckPostqueueConfig{}
+	c := &Config{}
 	output := c.generateConfig()
 	for _, line := range output {
 		fmt.Println(line)

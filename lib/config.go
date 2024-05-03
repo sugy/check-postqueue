@@ -7,14 +7,14 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-// CheckPostqueueConfig is the configuration file format
-type CheckPostqueueConfig struct {
+// Config is the configuration file format
+type Config struct {
 	PostqueuePath   string
 	ExcludeMessages []string
 }
 
 // loadConfig loads the plugin configuration file
-func (c *CheckPostqueueConfig) loadConfig(configFile string) error {
+func (c *Config) loadConfig(configFile string) error {
 	contents, err := os.ReadFile(configFile)
 	if err != nil {
 		return fmt.Errorf("an error occurred while loading the file: %w", err)
@@ -29,7 +29,7 @@ func (c *CheckPostqueueConfig) loadConfig(configFile string) error {
 }
 
 // Generate config file template
-func (c *CheckPostqueueConfig) generateConfig() []string {
+func (c *Config) generateConfig() []string {
 	c.PostqueuePath = "/usr/sbin/postqueue"
 
 	c.ExcludeMessages = getDefaultMessages()
