@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestCheckPostqueueConfig_loadConfig(t *testing.T) {
+func TestConfig_loadConfig(t *testing.T) {
 	type fields struct {
 		Prefix        string
 		PostqueuePath string
@@ -47,15 +47,15 @@ func TestCheckPostqueueConfig_loadConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &CheckPostqueueConfig{}
+			c := &Config{}
 			if err := c.loadConfig(tt.args.configFile); (err != nil) != tt.wantErr {
-				t.Errorf("CheckPostqueueConfig.loadConfig() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Config.loadConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func TestCheckPostqueueConfig_generateConfig(t *testing.T) {
+func TestConfig_generateConfig(t *testing.T) {
 	tests := []struct {
 		name       string
 		wantOutput []string
@@ -85,9 +85,9 @@ func TestCheckPostqueueConfig_generateConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &CheckPostqueueConfig{}
+			c := &Config{}
 			if output := c.generateConfig(); !reflect.DeepEqual(output, tt.wantOutput) {
-				t.Errorf("CheckPostqueueConfig.generateConfig() output = %v, wantoutput = %v, DeepEqual = %v", output, tt.wantOutput, reflect.DeepEqual(output, tt.wantOutput))
+				t.Errorf("Config.generateConfig() output = %v, wantoutput = %v, DeepEqual = %v", output, tt.wantOutput, reflect.DeepEqual(output, tt.wantOutput))
 			}
 		})
 	}
